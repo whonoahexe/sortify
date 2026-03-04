@@ -88,12 +88,15 @@ export function RankedList({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ albumId, rankedTrackIds: sortedTracks }),
       });
-      if (!res.ok) throw new Error('Save failed');
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.details || data.error || 'Save failed');
+      }
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert('Failed to save ranking.');
+      alert(err.message || 'Failed to save ranking.');
     } finally {
       setIsSaving(false);
     }
@@ -109,11 +112,11 @@ export function RankedList({
       });
 
       if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
         if (res.status === 429) {
-          const data = await res.json();
           throw new Error(data.error || 'Rate limited');
         }
-        throw new Error('Export failed');
+        throw new Error(data.details || data.error || 'Export failed');
       }
 
       const { url } = await res.json();
