@@ -85,13 +85,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: message }, { status: 429 });
     }
 
-    // Check for 403 Forbidden which often means missing scopes
+    // Missing scopes / stale authorization
+    if (
+      message.toLowerCase().includes('insufficient client scope') ||
+      message.toLowerCase().includes('insufficient_scope')
+    ) {
+      return NextResponse.json(
+        {
+          error: 'Spotify requires re-authentication to allow modifying playlists.',
+          requiresReauth: true,
+        },
+        { status: 403 }
+      );
+    }
+
+    // Generic Spotify 403 often indicates app restrictions (e.g. development mode allowlist)
     if (message.includes('403 ') || message.includes('Forbidden')) {
       return NextResponse.json(
-        { 
-          error: 'Spotify requires re-authentication to allow modifying playlists.',
-          requiresReauth: true
-        }, 
+        {
+          error:
+            'Spotify blocked playlist creation for this app/user. If your Spotify app is in Development mode, add this account in Dashboard > Users Management or request Extended Quota.',
+          requiresAppAccess: true,
+        },
         { status: 403 }
       );
     }
