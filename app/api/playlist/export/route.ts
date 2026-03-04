@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { getValidAccessToken } from '@/lib/auth';
 import { createUserPlaylist, addTracksToPlaylist } from '@/lib/spotify-user';
 
+const REQUIRED_EXPORT_SCOPES = ['playlist-modify-private'];
+
 async function getUserIdFromToken(token: string) {
   const response = await fetch('https://api.spotify.com/v1/me', {
     headers: { Authorization: `Bearer ${token}` },
@@ -13,9 +15,16 @@ async function getUserIdFromToken(token: string) {
 }
 
 export async function POST(request: Request) {
-  const token = await getValidAccessToken();
+  const token = await getValidAccessToken(REQUIRED_EXPORT_SCOPES);
   if (!token) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json(
+      {
+        error:
+          'Spotify requires re-authentication to allow modifying playlists.',
+        requiresReauth: true,
+      },
+      { status: 403 }
+    );
   }
 
   const userId = await getUserIdFromToken(token);
@@ -50,7 +59,8 @@ export async function POST(request: Request) {
       userId,
       playlistName,
       playlistDescription,
-      false
+      false,
+      token
     );
 
     const trackUris = rankedTrackIds.map((id) => `spotify:track:${id}`);
@@ -59,7 +69,7 @@ export async function POST(request: Request) {
     const chunkSize = 100;
     for (let i = 0; i < trackUris.length; i += chunkSize) {
       const chunk = trackUris.slice(i, i + chunkSize);
-      await addTracksToPlaylist(playlist.id, chunk);
+      await addTracksToPlaylist(playlist.id, chunk, token);
     }
 
     return NextResponse.json({

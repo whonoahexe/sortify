@@ -22,6 +22,7 @@ export const CODE_VERIFIER_COOKIE = 'spotify_code_verifier';
 export const ACCESS_TOKEN_COOKIE = 'spotify_access_token';
 export const REFRESH_TOKEN_COOKIE = 'spotify_refresh_token';
 export const TOKEN_EXPIRY_COOKIE = 'spotify_token_expiry';
+export const TOKEN_SCOPE_COOKIE = 'spotify_token_scope';
 
 /**
  * Common secure cookie options for all auth cookies.
@@ -76,6 +77,7 @@ export async function getSpotifyOAuthUrl() {
     redirect_uri: REDIRECT_URI,
     state,
     scope: AUTH_SCOPES,
+    show_dialog: 'true',
     code_challenge_method: 'S256',
     code_challenge: challenge,
   });
@@ -136,6 +138,14 @@ export async function setTokenCookies(tokenData: any) {
     getCookieOptions(tokenData.expires_in)
   );
 
+  if (tokenData.scope) {
+    cookieStore.set(
+      TOKEN_SCOPE_COOKIE,
+      tokenData.scope,
+      getCookieOptions(tokenData.expires_in)
+    );
+  }
+
   if (tokenData.refresh_token) {
     // Refresh tokens last longer. Let's say 30 days for the cookie.
     cookieStore.set(
@@ -144,6 +154,20 @@ export async function setTokenCookies(tokenData: any) {
       getCookieOptions(60 * 60 * 24 * 30)
     );
   }
+}
+
+function hasRequiredScopes(grantedScopeString: string | undefined, requiredScopes: string[]) {
+  if (!requiredScopes.length) return true;
+  if (!grantedScopeString) return false;
+
+  const grantedScopes = new Set(
+    grantedScopeString
+      .split(' ')
+      .map((scope) => scope.trim())
+      .filter(Boolean)
+  );
+
+  return requiredScopes.every((scope) => grantedScopes.has(scope));
 }
 
 /**
@@ -179,15 +203,20 @@ export async function refreshUserToken(refreshToken: string) {
 /**
  * Retrieves a valid access token. Handles refreshing if expired.
  */
-export async function getValidAccessToken() {
+export async function getValidAccessToken(requiredScopes: string[] = []) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
   const expiryStr = cookieStore.get(TOKEN_EXPIRY_COOKIE)?.value;
   const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
+  const grantedScopeString = cookieStore.get(TOKEN_SCOPE_COOKIE)?.value;
 
   if (!accessToken || !expiryStr) {
     if (refreshToken) {
-      return await refreshUserToken(refreshToken);
+      const refreshedToken = await refreshUserToken(refreshToken);
+      if (!hasRequiredScopes(grantedScopeString, requiredScopes)) {
+        return null;
+      }
+      return refreshedToken;
     }
     return null;
   }
@@ -198,8 +227,16 @@ export async function getValidAccessToken() {
   // If expired or about to expire in next minute
   if (now >= expiryTime - 60000) {
     if (refreshToken) {
-      return await refreshUserToken(refreshToken);
+      const refreshedToken = await refreshUserToken(refreshToken);
+      if (!hasRequiredScopes(grantedScopeString, requiredScopes)) {
+        return null;
+      }
+      return refreshedToken;
     }
+    return null;
+  }
+
+  if (!hasRequiredScopes(grantedScopeString, requiredScopes)) {
     return null;
   }
 
@@ -216,4 +253,5 @@ export async function clearAuthCookies() {
   cookieStore.delete(ACCESS_TOKEN_COOKIE);
   cookieStore.delete(REFRESH_TOKEN_COOKIE);
   cookieStore.delete(TOKEN_EXPIRY_COOKIE);
+  cookieStore.delete(TOKEN_SCOPE_COOKIE);
 }

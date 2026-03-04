@@ -7,9 +7,10 @@ export async function createUserPlaylist(
   userId: string,
   name: string,
   description: string,
-  isPublic: boolean = false
+  isPublic: boolean = false,
+  accessToken?: string
 ) {
-  const token = await getValidAccessToken();
+  const token = accessToken ?? (await getValidAccessToken());
   if (!token) throw new Error('Unauthorized');
 
   const response = await fetch(
@@ -47,9 +48,10 @@ export async function createUserPlaylist(
  */
 export async function addTracksToPlaylist(
   playlistId: string,
-  trackUris: string[]
+  trackUris: string[],
+  accessToken?: string
 ) {
-  const token = await getValidAccessToken();
+  const token = accessToken ?? (await getValidAccessToken());
   if (!token) throw new Error('Unauthorized');
 
   const response = await fetch(
