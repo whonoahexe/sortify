@@ -69,7 +69,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Internal Server Error', details: error?.message || String(error) },
       { status: 500 }
     );
   }

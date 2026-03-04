@@ -36,7 +36,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Failed to save ranking:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Internal Server Error', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }
@@ -59,7 +59,7 @@ export async function GET() {
   } catch (error) {
     console.error('Failed to get rankings:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Internal Server Error', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }
