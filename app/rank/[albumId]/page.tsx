@@ -325,6 +325,7 @@ export default function RankPage() {
           </div>
 
           <RankedList
+            albumId={albumId}
             albumName={album!.name}
             artist={album!.artist}
             sortedTracks={state!.finalSortedList}
