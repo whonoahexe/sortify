@@ -11,7 +11,6 @@ Sortify is a fast, deterministic pairwise ranking engine that allows you to disc
 - **Beautiful Motion**: Smooth layouts and physics-based animations using Framer Motion.
 - **Anonymous Usage**: Jump right in, search, and rank. No login required.
 - **Optional Account Integration**: Sign in with Spotify to save rankings, view history, and generate shareable public links.
-- **Export to Playlist**: Export your perfectly ranked list straight to a new Spotify playlist.
 - **Keyboard Navigation**: Rapidly sort using `Arrow Left`/`Arrow Right` and `Z` to undo.
 
 ## Architecture

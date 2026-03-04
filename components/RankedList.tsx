@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Button } from './ui/button';
-import { Check, Copy, Save, Share, FolderOutput } from 'lucide-react';
+import { Check, Copy, Save } from 'lucide-react';
 import { Track } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -56,12 +56,10 @@ export function RankedList({
   const [copied, setCopied] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
-  const [exportSuccess, setExportSuccess] = useState(false);
 
   const formatList = () => {
-    let header = `${albumName} - ${artist}\n\n`;
-    let body = sortedTracks
+    const header = `${albumName} - ${artist}\n\n`;
+    const body = sortedTracks
       .map(
         (id, index) => `${index + 1}. ${trackMap[id]?.name || 'Unknown Track'}`
       )
@@ -94,42 +92,12 @@ export function RankedList({
       }
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      alert(err.message || 'Failed to save ranking.');
+      const message = err instanceof Error ? err.message : 'Failed to save ranking.';
+      alert(message);
     } finally {
       setIsSaving(false);
-    }
-  };
-
-  const handleExport = async () => {
-    setIsExporting(true);
-    try {
-      const res = await fetch('/api/playlist/export', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ albumName, rankedTrackIds: sortedTracks }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        if (res.status === 429) {
-          throw new Error(data.error || 'Rate limited');
-        }
-        throw new Error(data.details || data.error || 'Export failed');
-      }
-
-      const { url } = await res.json();
-      setExportSuccess(true);
-      setTimeout(() => {
-        setExportSuccess(false);
-        if (url) window.open(url, '_blank');
-      }, 1500);
-    } catch (err: any) {
-      console.error(err);
-      alert(err.message || 'Failed to export to Spotify.');
-    } finally {
-      setIsExporting(false);
     }
   };
 
@@ -164,23 +132,6 @@ export function RankedList({
                 <Save className="h-3.5 w-3.5" />
               )}
               {saveSuccess ? 'Saved' : 'Save'}
-            </Button>
-          )}
-
-          {isAuthenticated && (
-            <Button
-              onClick={handleExport}
-              variant="outline"
-              size="sm"
-              disabled={isExporting || exportSuccess}
-              className="shrink-0 gap-2 rounded-lg"
-            >
-              {exportSuccess ? (
-                <Check className="h-3.5 w-3.5 text-emerald-400" />
-              ) : (
-                <FolderOutput className="h-3.5 w-3.5" />
-              )}
-              {exportSuccess ? 'Exported!' : 'Export Playlist'}
             </Button>
           )}
 
