@@ -147,6 +147,12 @@ export default function RankPage() {
         handleSelect(leftId);
       } else if (e.key === 'ArrowRight' || e.key === '2') {
         handleSelect(rightId);
+      } else if (e.key.toLowerCase() === 'z') {
+        if (state?.comparisonHistory.length ?? 0 > 0) undo();
+      } else if (e.key === 'Escape') {
+        if (confirm('Are you sure you want to quit this ranking? Current progress will be saved but you will leave this page.')) {
+          router.push('/');
+        }
       }
     };
 
@@ -157,7 +163,10 @@ export default function RankPage() {
     isSelectionLocked,
     state?.phase,
     state?.activeMerge,
+    state?.comparisonHistory.length,
     swapSides,
+    undo,
+    router,
   ]);
 
   // Determine view phase
@@ -509,6 +518,22 @@ export default function RankPage() {
         >
           {decisionsUsed} of ~{estimatedDecisions}
         </motion.p>
+        
+        {/* Keyboard hints */}
+        {trackA && trackB && (
+          <motion.div
+            className="text-muted-foreground/30 mt-12 flex items-center gap-3 text-[11px] font-medium tracking-wide uppercase"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.0 }}
+          >
+            <span>← → to choose</span>
+            <span>·</span>
+            <span>Z to undo</span>
+            <span>·</span>
+            <span>Esc to quit</span>
+          </motion.div>
+        )}
       </main>
     </motion.div>
   );

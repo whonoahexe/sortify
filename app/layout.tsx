@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Sortify — Rank Your Favorite Album',
+  title: 'Sortify - Rank Your Favorite Album',
   description:
     'Compare tracks head-to-head and build your definitive album ranking. Discover which songs truly rise to the top.',
 };

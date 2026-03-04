@@ -8,9 +8,12 @@ import { Input } from '@/components/ui/input';
 import { searchAlbums, Album } from '@/lib/api-client';
 import { AlbumCard } from '@/components/AlbumCard';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function Home() {
   const router = useRouter();
+  const { isAuthenticated, logout, loading } = useAuth();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Album[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -43,6 +46,26 @@ export default function Home() {
 
   return (
     <main className="bg-background text-foreground flex min-h-screen flex-col items-center">
+      {/* Top Header */}
+      {!loading && (
+        <div className="absolute top-4 right-6 flex items-center gap-4 z-10 w-full justify-end">
+          {isAuthenticated ? (
+            <>
+              <Button variant="ghost" size="sm" onClick={() => router.push('/library')}>
+                Library
+              </Button>
+              <Button variant="outline" size="sm" onClick={logout}>
+                Sign out
+              </Button>
+            </>
+          ) : (
+            <Button variant="outline" size="sm" onClick={() => window.location.href = '/api/auth/login'}>
+              Sign in with Spotify
+            </Button>
+          )}
+        </div>
+      )}
+
       {/* Hero / Search Area */}
       <div
         className={`flex w-full max-w-2xl flex-col items-center px-6 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${

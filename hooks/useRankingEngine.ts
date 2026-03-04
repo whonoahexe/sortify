@@ -78,17 +78,26 @@ export function useRankingEngine(albumId: string, trackIds: string[]) {
     setIsHydrating(false);
   }, [albumId, trackIds, debouncedSave]);
 
+  const isSubmittingRef = useRef(false);
+
   const selectTrack = useCallback(
     (winnerId: string) => {
       if (!state || state.phase !== 'AWAITING_COMPARISON' || !state.activeMerge)
         return;
+      
+      if (isSubmittingRef.current) return;
+      isSubmittingRef.current = true;
 
-      const trackA = state.activeMerge.left[0];
-      const trackB = state.activeMerge.right[0];
+      try {
+        const trackA = state.activeMerge.left[0];
+        const trackB = state.activeMerge.right[0];
 
-      const nextState = registerComparison(state, trackA, trackB, winnerId);
-      setState(nextState);
-      debouncedSave(nextState);
+        const nextState = registerComparison(state, trackA, trackB, winnerId);
+        setState(nextState);
+        debouncedSave(nextState);
+      } finally {
+        isSubmittingRef.current = false;
+      }
     },
     [state, debouncedSave]
   );
