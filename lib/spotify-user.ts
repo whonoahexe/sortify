@@ -13,7 +13,7 @@ export async function createUserPlaylist(
   if (!token) throw new Error('Unauthorized');
 
   const response = await fetch(
-    `https://api.spotify.com/v1/me/playlists`,
+    `https://api.spotify.com/v1/users/${userId}/playlists`,
     {
       method: 'POST',
       headers: {
@@ -35,7 +35,8 @@ export async function createUserPlaylist(
         `Rate limited by Spotify. Try again in ${retryAfter} seconds.`
       );
     }
-    throw new Error(`Failed to create playlist: ${response.statusText}`);
+    const errorText = await response.text();
+    throw new Error(`Failed to create playlist: ${response.status} ${response.statusText} - ${errorText}`);
   }
 
   return response.json();
@@ -72,7 +73,8 @@ export async function addTracksToPlaylist(
         `Rate limited by Spotify. Try again in ${retryAfter} seconds.`
       );
     }
-    throw new Error(`Failed to add tracks: ${response.statusText}`);
+    const errorText = await response.text();
+    throw new Error(`Failed to add tracks: ${response.status} ${response.statusText} - ${errorText}`);
   }
 
   return response.json();

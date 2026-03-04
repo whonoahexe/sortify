@@ -54,7 +54,13 @@ export async function POST(request: Request) {
     );
 
     const trackUris = rankedTrackIds.map((id) => `spotify:track:${id}`);
-    await addTracksToPlaylist(playlist.id, trackUris);
+    
+    // Spotify limits track additions to 100 per request
+    const chunkSize = 100;
+    for (let i = 0; i < trackUris.length; i += chunkSize) {
+      const chunk = trackUris.slice(i, i + chunkSize);
+      await addTracksToPlaylist(playlist.id, chunk);
+    }
 
     return NextResponse.json({
       success: true,
@@ -66,6 +72,17 @@ export async function POST(request: Request) {
     // Explicitly check for rate limits
     if (error.message && error.message.includes('Rate limited')) {
       return NextResponse.json({ error: error.message }, { status: 429 });
+    }
+
+    // Check for 403 Forbidden which often means missing scopes
+    if (error.message && (error.message.includes('403 ') || error.message.includes('Forbidden'))) {
+      return NextResponse.json(
+        { 
+          error: 'Spotify requires re-authentication to allow modifying playlists.',
+          requiresReauth: true
+        }, 
+        { status: 403 }
+      );
     }
 
     return NextResponse.json(
