@@ -24,6 +24,13 @@ export const REFRESH_TOKEN_COOKIE = 'spotify_refresh_token';
 export const TOKEN_EXPIRY_COOKIE = 'spotify_token_expiry';
 export const TOKEN_SCOPE_COOKIE = 'spotify_token_scope';
 
+interface SpotifyTokenResponse {
+  access_token: string;
+  expires_in: number;
+  refresh_token?: string;
+  scope?: string;
+}
+
 /**
  * Common secure cookie options for all auth cookies.
  */
@@ -120,8 +127,9 @@ export async function exchangeCodeForToken(code: string, verifier: string) {
 /**
  * Persists the token response to secure HTTP-only cookies.
  */
-export async function setTokenCookies(tokenData: any) {
+export async function setTokenCookies(tokenData: SpotifyTokenResponse) {
   const cookieStore = await cookies();
+  const existingScope = cookieStore.get(TOKEN_SCOPE_COOKIE)?.value;
 
   // expiry time = now + expires_in seconds
   const expiryTimeMs = Date.now() + tokenData.expires_in * 1000;
@@ -138,11 +146,11 @@ export async function setTokenCookies(tokenData: any) {
     getCookieOptions(tokenData.expires_in)
   );
 
-  if (tokenData.scope) {
+  if (tokenData.scope || existingScope) {
     cookieStore.set(
       TOKEN_SCOPE_COOKIE,
-      tokenData.scope,
-      getCookieOptions(tokenData.expires_in)
+      tokenData.scope || existingScope!,
+      getCookieOptions(60 * 60 * 24 * 30)
     );
   }
 
@@ -160,8 +168,15 @@ function hasRequiredScopes(grantedScopeString: string | undefined, requiredScope
   if (!requiredScopes.length) return true;
   if (!grantedScopeString) return false;
 
+  let normalizedScopes = grantedScopeString;
+  try {
+    normalizedScopes = decodeURIComponent(grantedScopeString);
+  } catch {
+    normalizedScopes = grantedScopeString;
+  }
+
   const grantedScopes = new Set(
-    grantedScopeString
+    normalizedScopes
       .split(' ')
       .map((scope) => scope.trim())
       .filter(Boolean)

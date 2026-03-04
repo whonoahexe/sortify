@@ -76,16 +76,17 @@ export async function POST(request: Request) {
       success: true,
       url: playlist.external_urls.spotify,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Export failed:', error);
+    const message = error instanceof Error ? error.message : String(error);
 
     // Explicitly check for rate limits
-    if (error.message && error.message.includes('Rate limited')) {
-      return NextResponse.json({ error: error.message }, { status: 429 });
+    if (message.includes('Rate limited')) {
+      return NextResponse.json({ error: message }, { status: 429 });
     }
 
     // Check for 403 Forbidden which often means missing scopes
-    if (error.message && (error.message.includes('403 ') || error.message.includes('Forbidden'))) {
+    if (message.includes('403 ') || message.includes('Forbidden')) {
       return NextResponse.json(
         { 
           error: 'Spotify requires re-authentication to allow modifying playlists.',
@@ -96,7 +97,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(
-      { error: 'Internal Server Error', details: error?.message || String(error) },
+      { error: 'Internal Server Error', details: message },
       { status: 500 }
     );
   }
