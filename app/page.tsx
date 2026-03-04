@@ -48,10 +48,14 @@ export default function Home() {
     <main className="bg-background text-foreground flex min-h-screen flex-col items-center">
       {/* Top Header */}
       {!loading && (
-        <div className="absolute top-4 right-6 flex items-center gap-4 z-10 w-full justify-end">
+        <div className="absolute top-4 right-6 z-10 flex w-full items-center justify-end gap-4">
           {isAuthenticated ? (
             <>
-              <Button variant="ghost" size="sm" onClick={() => router.push('/library')}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.push('/library')}
+              >
                 Library
               </Button>
               <Button variant="outline" size="sm" onClick={logout}>
@@ -59,7 +63,11 @@ export default function Home() {
               </Button>
             </>
           ) : (
-            <Button variant="outline" size="sm" onClick={() => window.location.href = '/api/auth/login'}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => (window.location.href = '/api/auth/login')}
+            >
               Sign in with Spotify
             </Button>
           )}

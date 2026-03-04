@@ -52,7 +52,7 @@ export function RankedList({
   trackMap,
 }: RankedListProps) {
   const { isAuthenticated } = useAuth();
-  
+
   const [copied, setCopied] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -107,7 +107,7 @@ export function RankedList({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ albumName, rankedTrackIds: sortedTracks }),
       });
-      
+
       if (!res.ok) {
         if (res.status === 429) {
           const data = await res.json();
@@ -115,7 +115,7 @@ export function RankedList({
         }
         throw new Error('Export failed');
       }
-      
+
       const { url } = await res.json();
       setExportSuccess(true);
       setTimeout(() => {
@@ -145,7 +145,7 @@ export function RankedList({
             {albumName} · {artist}
           </p>
         </div>
-        
+
         <div className="flex flex-wrap items-center gap-2">
           {isAuthenticated && albumId && (
             <Button

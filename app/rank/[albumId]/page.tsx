@@ -150,7 +150,11 @@ export default function RankPage() {
       } else if (e.key.toLowerCase() === 'z') {
         if (state?.comparisonHistory.length ?? 0 > 0) undo();
       } else if (e.key === 'Escape') {
-        if (confirm('Are you sure you want to quit this ranking? Current progress will be saved but you will leave this page.')) {
+        if (
+          confirm(
+            'Are you sure you want to quit this ranking? Current progress will be saved but you will leave this page.'
+          )
+        ) {
           router.push('/');
         }
       }
@@ -483,23 +487,23 @@ export default function RankPage() {
         {trackA && trackB ? (
           <div className="grid w-full max-w-5xl grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
             <BattleCard
-                trackName={swapSides ? trackB.name : trackA.name}
-                trackKey={swapSides ? trackB.id : trackA.id}
-                onClick={() => handleSelect(swapSides ? trackB.id : trackA.id)}
-                disabled={isSelectionLocked}
-                isOpponentHovered={hoveredSide === "right"}
-                onHoverStart={() => setHoveredSide("left")}
-                onHoverEnd={() => setHoveredSide(null)}
-              />
-              <BattleCard
-                trackName={swapSides ? trackA.name : trackB.name}
-                trackKey={swapSides ? trackA.id : trackB.id}
-                onClick={() => handleSelect(swapSides ? trackA.id : trackB.id)}
-                disabled={isSelectionLocked}
-                isOpponentHovered={hoveredSide === "left"}
-                onHoverStart={() => setHoveredSide("right")}
-                onHoverEnd={() => setHoveredSide(null)}
-              />
+              trackName={swapSides ? trackB.name : trackA.name}
+              trackKey={swapSides ? trackB.id : trackA.id}
+              onClick={() => handleSelect(swapSides ? trackB.id : trackA.id)}
+              disabled={isSelectionLocked}
+              isOpponentHovered={hoveredSide === 'right'}
+              onHoverStart={() => setHoveredSide('left')}
+              onHoverEnd={() => setHoveredSide(null)}
+            />
+            <BattleCard
+              trackName={swapSides ? trackA.name : trackB.name}
+              trackKey={swapSides ? trackA.id : trackB.id}
+              onClick={() => handleSelect(swapSides ? trackA.id : trackB.id)}
+              disabled={isSelectionLocked}
+              isOpponentHovered={hoveredSide === 'left'}
+              onHoverStart={() => setHoveredSide('right')}
+              onHoverEnd={() => setHoveredSide(null)}
+            />
           </div>
         ) : (
           <div className="flex h-80 w-full items-center justify-center">
@@ -518,7 +522,7 @@ export default function RankPage() {
         >
           {decisionsUsed} of ~{estimatedDecisions}
         </motion.p>
-        
+
         {/* Keyboard hints */}
         {trackA && trackB && (
           <motion.div

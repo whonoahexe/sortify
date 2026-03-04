@@ -19,7 +19,7 @@ export async function GET(
   const idStr = (await params).id;
   try {
     const ranking = await getRankingById(idStr);
-    
+
     if (!ranking) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
@@ -56,7 +56,7 @@ export async function DELETE(
   try {
     const idStr = (await params).id;
     const ranking = await getRankingById(idStr);
-    
+
     if (!ranking) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from 'motion/react';
 
 interface BattleCardProps {
   trackName: string;
@@ -29,20 +29,13 @@ export function BattleCard({
       onHoverEnd={onHoverEnd}
       disabled={disabled}
       whileTap={!disabled ? { scale: 0.97 } : undefined}
-      className={`
-        w-full aspect-4/3
-        flex items-center justify-center p-8 md:p-12 text-center
-        rounded-2xl border select-none
-        transition-[border-color,background-color,opacity,box-shadow] duration-200 ease-out
-        focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none
-        ${
-          disabled
-            ? "opacity-50 cursor-not-allowed border-border bg-card"
-            : isOpponentHovered
-            ? "opacity-80 border-border/60 bg-card cursor-pointer"
-            : "cursor-pointer border-border bg-card hover:border-muted-foreground/40 hover:shadow-[0_0_20px_-4px_oklch(0.75_0.12_280/0.1)] surface-breathe"
-        }
-      `}
+      className={`focus-visible:ring-primary flex aspect-4/3 w-full items-center justify-center rounded-2xl border p-8 text-center transition-[border-color,background-color,opacity,box-shadow] duration-200 ease-out select-none focus-visible:ring-2 focus-visible:outline-none md:p-12 ${
+        disabled
+          ? 'border-border bg-card cursor-not-allowed opacity-50'
+          : isOpponentHovered
+            ? 'border-border/60 bg-card cursor-pointer opacity-80'
+            : 'border-border bg-card hover:border-muted-foreground/40 surface-breathe cursor-pointer hover:shadow-[0_0_20px_-4px_oklch(0.75_0.12_280/0.1)]'
+      } `}
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.span
@@ -51,7 +44,7 @@ export function BattleCard({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.1 }}
-          className="text-2xl md:text-4xl lg:text-5xl font-semibold tracking-tight leading-tight text-foreground"
+          className="text-foreground text-2xl leading-tight font-semibold tracking-tight md:text-4xl lg:text-5xl"
         >
           {trackName}
         </motion.span>

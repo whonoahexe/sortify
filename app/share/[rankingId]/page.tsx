@@ -36,7 +36,7 @@ export default function SharePage() {
           return;
         }
         if (!res.ok) throw new Error('Failed to fetch');
-        
+
         const data = await res.json();
         setShareData(data);
 
@@ -64,16 +64,16 @@ export default function SharePage() {
     return (
       <div className="mx-auto mt-12 min-h-screen max-w-4xl space-y-8 p-6">
         <Skeleton className="h-10 w-1/4" />
-        <div className="flex items-center gap-5 mt-6">
+        <div className="mt-6 flex items-center gap-5">
           <Skeleton className="h-20 w-20 rounded-xl" />
-          <div className="space-y-3 w-48">
-             <Skeleton className="h-6 w-full" />
-             <Skeleton className="h-4 w-3/4" />
+          <div className="w-48 space-y-3">
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-4 w-3/4" />
           </div>
         </div>
         <div className="space-y-4 pt-12">
           {[...Array(5)].map((_, i) => (
-             <Skeleton key={i} className="h-16 w-full rounded-xl" />
+            <Skeleton key={i} className="h-16 w-full rounded-xl" />
           ))}
         </div>
       </div>
@@ -83,7 +83,9 @@ export default function SharePage() {
   if (notFound || !shareData || !album) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center p-6 text-center">
-        <h1 className="text-2xl font-bold tracking-tight mb-3">Ranking Not Found</h1>
+        <h1 className="mb-3 text-2xl font-bold tracking-tight">
+          Ranking Not Found
+        </h1>
         <p className="text-muted-foreground mb-6">
           This ranking either doesn't exist or has been deleted.
         </p>
@@ -111,13 +113,18 @@ export default function SharePage() {
         <div className="mb-10 flex items-center gap-5">
           {album.coverImage && (
             <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg shadow-lg">
-              <Image src={album.coverImage} alt={album.name} fill className="object-cover" />
+              <Image
+                src={album.coverImage}
+                alt={album.name}
+                fill
+                className="object-cover"
+              />
             </div>
           )}
           <div className="min-w-0">
             <h1 className="text-xl font-bold">{album.name}</h1>
             <p className="text-muted-foreground">{album.artist}</p>
-            <p className="text-muted-foreground/50 text-xs mt-1">
+            <p className="text-muted-foreground/50 mt-1 text-xs">
               Ranked on {new Date(shareData.createdAt).toLocaleDateString()}
             </p>
           </div>

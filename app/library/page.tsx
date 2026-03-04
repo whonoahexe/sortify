@@ -101,7 +101,9 @@ export default function LibraryPage() {
             Home
           </Button>
           <div className="flex items-center gap-3">
-            <span className="text-muted-foreground text-sm">{user?.display_name}</span>
+            <span className="text-muted-foreground text-sm">
+              {user?.display_name}
+            </span>
             <div className="bg-primary/20 flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold uppercase">
               {user?.display_name?.[0] || 'U'}
             </div>
@@ -138,17 +140,26 @@ export default function LibraryPage() {
                       className="bg-card border-border hover:border-primary/30 flex cursor-pointer items-center gap-5 rounded-xl border p-4 transition-colors"
                     >
                       {album?.coverImage ? (
-                         <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md">
-                           <Image src={album.coverImage} alt="Cover" fill className="object-cover" />
-                         </div>
+                        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md">
+                          <Image
+                            src={album.coverImage}
+                            alt="Cover"
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
                       ) : (
                         <div className="bg-muted h-16 w-16 shrink-0 rounded-md" />
                       )}
 
                       <div className="min-w-0 grow">
-                        <h3 className="truncate font-semibold text-lg">{album?.name || 'Loading...'}</h3>
-                        <p className="text-muted-foreground text-sm truncate">{album?.artist || 'Unknown Artist'}</p>
-                        <p className="text-muted-foreground/60 text-xs mt-1">
+                        <h3 className="truncate text-lg font-semibold">
+                          {album?.name || 'Loading...'}
+                        </h3>
+                        <p className="text-muted-foreground truncate text-sm">
+                          {album?.artist || 'Unknown Artist'}
+                        </p>
+                        <p className="text-muted-foreground/60 mt-1 text-xs">
                           {new Date(ranking.createdAt).toLocaleDateString()}
                         </p>
                       </div>

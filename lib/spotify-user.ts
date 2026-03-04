@@ -31,7 +31,9 @@ export async function createUserPlaylist(
   if (!response.ok) {
     if (response.status === 429) {
       const retryAfter = response.headers.get('Retry-After');
-      throw new Error(`Rate limited by Spotify. Try again in ${retryAfter} seconds.`);
+      throw new Error(
+        `Rate limited by Spotify. Try again in ${retryAfter} seconds.`
+      );
     }
     throw new Error(`Failed to create playlist: ${response.statusText}`);
   }
@@ -66,7 +68,9 @@ export async function addTracksToPlaylist(
   if (!response.ok) {
     if (response.status === 429) {
       const retryAfter = response.headers.get('Retry-After');
-      throw new Error(`Rate limited by Spotify. Try again in ${retryAfter} seconds.`);
+      throw new Error(
+        `Rate limited by Spotify. Try again in ${retryAfter} seconds.`
+      );
     }
     throw new Error(`Failed to add tracks: ${response.statusText}`);
   }

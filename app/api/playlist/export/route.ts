@@ -62,13 +62,10 @@ export async function POST(request: Request) {
     });
   } catch (error: any) {
     console.error('Export failed:', error);
-    
+
     // Explicitly check for rate limits
     if (error.message && error.message.includes('Rate limited')) {
-       return NextResponse.json(
-        { error: error.message },
-        { status: 429 }
-      );
+      return NextResponse.json({ error: error.message }, { status: 429 });
     }
 
     return NextResponse.json(

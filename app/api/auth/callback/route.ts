@@ -39,6 +39,8 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL('/', request.url));
   } catch (err) {
     console.error('Callback error:', err);
-    return NextResponse.redirect(new URL('/?error=exchange_failed', request.url));
+    return NextResponse.redirect(
+      new URL('/?error=exchange_failed', request.url)
+    );
   }
 }

@@ -37,7 +37,10 @@ export async function getRankingById(id: string): Promise<Ranking | null> {
   });
 }
 
-export async function deleteRanking(id: string, userId: string): Promise<boolean> {
+export async function deleteRanking(
+  id: string,
+  userId: string
+): Promise<boolean> {
   const result = await prisma.ranking.deleteMany({
     where: {
       id,

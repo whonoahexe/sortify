@@ -84,7 +84,7 @@ export function useRankingEngine(albumId: string, trackIds: string[]) {
     (winnerId: string) => {
       if (!state || state.phase !== 'AWAITING_COMPARISON' || !state.activeMerge)
         return;
-      
+
       if (isSubmittingRef.current) return;
       isSubmittingRef.current = true;
 
